@@ -14,11 +14,11 @@
  */
 
 #include "hid-uclogic-params.h"
+#include "hid-ids.h"
 #include "hid-uclogic-rdesc.h"
 #include "usbhid/usbhid.h"
-#include "hid-ids.h"
-#include <linux/ctype.h>
 #include <asm/unaligned.h>
+#include <linux/ctype.h>
 
 #include <linux/version.h>
 
@@ -30,19 +30,18 @@
  * Returns:
  *	The string representing the type, or NULL if the type is unknown.
  */
-static const char *uclogic_params_pen_inrange_to_str(
-				enum uclogic_params_pen_inrange inrange)
-{
-	switch (inrange) {
-	case UCLOGIC_PARAMS_PEN_INRANGE_NORMAL:
-		return "normal";
-	case UCLOGIC_PARAMS_PEN_INRANGE_INVERTED:
-		return "inverted";
-	case UCLOGIC_PARAMS_PEN_INRANGE_NONE:
-		return "none";
-	default:
-		return NULL;
-	}
+static const char *
+uclogic_params_pen_inrange_to_str(enum uclogic_params_pen_inrange inrange) {
+  switch (inrange) {
+  case UCLOGIC_PARAMS_PEN_INRANGE_NORMAL:
+    return "normal";
+  case UCLOGIC_PARAMS_PEN_INRANGE_INVERTED:
+    return "inverted";
+  case UCLOGIC_PARAMS_PEN_INRANGE_NONE:
+    return "none";
+  default:
+    return NULL;
+  }
 }
 
 /**
@@ -52,29 +51,27 @@ static const char *uclogic_params_pen_inrange_to_str(
  * @pen:	The pen parameters to dump.
  */
 static void uclogic_params_pen_hid_dbg(const struct hid_device *hdev,
-					const struct uclogic_params_pen *pen)
-{
-	size_t i;
+                                       const struct uclogic_params_pen *pen) {
+  size_t i;
 
-	hid_dbg(hdev, "\t.usage_invalid = %s\n",
-		(pen->usage_invalid ? "true" : "false"));
-	hid_dbg(hdev, "\t.desc_ptr = %p\n", pen->desc_ptr);
-	hid_dbg(hdev, "\t.desc_size = %u\n", pen->desc_size);
-	hid_dbg(hdev, "\t.id = %u\n", pen->id);
-	hid_dbg(hdev, "\t.subreport_list = {\n");
-	for (i = 0; i < ARRAY_SIZE(pen->subreport_list); i++) {
-		hid_dbg(hdev, "\t\t{0x%02hhx, %hhu}%s\n",
-			pen->subreport_list[i].value,
-			pen->subreport_list[i].id,
-			i < (ARRAY_SIZE(pen->subreport_list) - 1) ? "," : "");
-	}
-	hid_dbg(hdev, "\t}\n");
-	hid_dbg(hdev, "\t.inrange = %s\n",
-		uclogic_params_pen_inrange_to_str(pen->inrange));
-	hid_dbg(hdev, "\t.fragmented_hires = %s\n",
-		(pen->fragmented_hires ? "true" : "false"));
-	hid_dbg(hdev, "\t.tilt_y_flipped = %s\n",
-		(pen->tilt_y_flipped ? "true" : "false"));
+  hid_dbg(hdev, "\t.usage_invalid = %s\n",
+          (pen->usage_invalid ? "true" : "false"));
+  hid_dbg(hdev, "\t.desc_ptr = %p\n", pen->desc_ptr);
+  hid_dbg(hdev, "\t.desc_size = %u\n", pen->desc_size);
+  hid_dbg(hdev, "\t.id = %u\n", pen->id);
+  hid_dbg(hdev, "\t.subreport_list = {\n");
+  for (i = 0; i < ARRAY_SIZE(pen->subreport_list); i++) {
+    hid_dbg(hdev, "\t\t{0x%02hhx, %hhu}%s\n", pen->subreport_list[i].value,
+            pen->subreport_list[i].id,
+            i < (ARRAY_SIZE(pen->subreport_list) - 1) ? "," : "");
+  }
+  hid_dbg(hdev, "\t}\n");
+  hid_dbg(hdev, "\t.inrange = %s\n",
+          uclogic_params_pen_inrange_to_str(pen->inrange));
+  hid_dbg(hdev, "\t.fragmented_hires = %s\n",
+          (pen->fragmented_hires ? "true" : "false"));
+  hid_dbg(hdev, "\t.tilt_y_flipped = %s\n",
+          (pen->tilt_y_flipped ? "true" : "false"));
 }
 
 /**
@@ -84,22 +81,19 @@ static void uclogic_params_pen_hid_dbg(const struct hid_device *hdev,
  * @hdev:	The HID device the pen parameters describe.
  * @frame:	The frame parameters to dump.
  */
-static void uclogic_params_frame_hid_dbg(
-				const struct hid_device *hdev,
-				const struct uclogic_params_frame *frame)
-{
-	hid_dbg(hdev, "\t\t.desc_ptr = %p\n", frame->desc_ptr);
-	hid_dbg(hdev, "\t\t.desc_size = %u\n", frame->desc_size);
-	hid_dbg(hdev, "\t\t.id = %u\n", frame->id);
-	hid_dbg(hdev, "\t\t.suffix = %s\n", frame->suffix);
-	hid_dbg(hdev, "\t\t.re_lsb = %u\n", frame->re_lsb);
-	hid_dbg(hdev, "\t\t.dev_id_byte = %u\n", frame->dev_id_byte);
-	hid_dbg(hdev, "\t\t.touch_byte = %u\n", frame->touch_byte);
-	hid_dbg(hdev, "\t\t.touch_max = %hhd\n", frame->touch_max);
-	hid_dbg(hdev, "\t\t.touch_flip_at = %hhd\n",
-		frame->touch_flip_at);
-	hid_dbg(hdev, "\t\t.bitmap_dial_byte = %u\n",
-		frame->bitmap_dial_byte);
+static void
+uclogic_params_frame_hid_dbg(const struct hid_device *hdev,
+                             const struct uclogic_params_frame *frame) {
+  hid_dbg(hdev, "\t\t.desc_ptr = %p\n", frame->desc_ptr);
+  hid_dbg(hdev, "\t\t.desc_size = %u\n", frame->desc_size);
+  hid_dbg(hdev, "\t\t.id = %u\n", frame->id);
+  hid_dbg(hdev, "\t\t.suffix = %s\n", frame->suffix);
+  hid_dbg(hdev, "\t\t.re_lsb = %u\n", frame->re_lsb);
+  hid_dbg(hdev, "\t\t.dev_id_byte = %u\n", frame->dev_id_byte);
+  hid_dbg(hdev, "\t\t.touch_byte = %u\n", frame->touch_byte);
+  hid_dbg(hdev, "\t\t.touch_max = %hhd\n", frame->touch_max);
+  hid_dbg(hdev, "\t\t.touch_flip_at = %hhd\n", frame->touch_flip_at);
+  hid_dbg(hdev, "\t\t.bitmap_dial_byte = %u\n", frame->bitmap_dial_byte);
 }
 
 /**
@@ -109,25 +103,23 @@ static void uclogic_params_frame_hid_dbg(
  * @params:	The parameters to dump.
  */
 void uclogic_params_hid_dbg(const struct hid_device *hdev,
-				const struct uclogic_params *params)
-{
-	size_t i;
+                            const struct uclogic_params *params) {
+  size_t i;
 
-	hid_dbg(hdev, ".invalid = %s\n",
-		params->invalid ? "true" : "false");
-	hid_dbg(hdev, ".desc_ptr = %p\n", params->desc_ptr);
-	hid_dbg(hdev, ".desc_size = %u\n", params->desc_size);
-	hid_dbg(hdev, ".pen = {\n");
-	uclogic_params_pen_hid_dbg(hdev, &params->pen);
-	hid_dbg(hdev, "\t}\n");
-	hid_dbg(hdev, ".frame_list = {\n");
-	for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
-		hid_dbg(hdev, "\t{\n");
-		uclogic_params_frame_hid_dbg(hdev, &params->frame_list[i]);
-		hid_dbg(hdev, "\t}%s\n",
-			i < (ARRAY_SIZE(params->frame_list) - 1) ? "," : "");
-	}
-	hid_dbg(hdev, "}\n");
+  hid_dbg(hdev, ".invalid = %s\n", params->invalid ? "true" : "false");
+  hid_dbg(hdev, ".desc_ptr = %p\n", params->desc_ptr);
+  hid_dbg(hdev, ".desc_size = %u\n", params->desc_size);
+  hid_dbg(hdev, ".pen = {\n");
+  uclogic_params_pen_hid_dbg(hdev, &params->pen);
+  hid_dbg(hdev, "\t}\n");
+  hid_dbg(hdev, ".frame_list = {\n");
+  for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
+    hid_dbg(hdev, "\t{\n");
+    uclogic_params_frame_hid_dbg(hdev, &params->frame_list[i]);
+    hid_dbg(hdev, "\t}%s\n",
+            i < (ARRAY_SIZE(params->frame_list) - 1) ? "," : "");
+  }
+  hid_dbg(hdev, "}\n");
 }
 
 /**
@@ -149,47 +141,42 @@ void uclogic_params_hid_dbg(const struct hid_device *hdev,
  *	another negative errno code in case of other error.
  */
 static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
-					__u8 idx, size_t len)
-{
-	int rc;
-	struct usb_device *udev = hid_to_usb_dev(hdev);
-	__u8 *buf = NULL;
+                                       __u8 idx, size_t len) {
+  int rc;
+  struct usb_device *udev = hid_to_usb_dev(hdev);
+  __u8 *buf = NULL;
 
-	/* Check arguments */
-	if (hdev == NULL) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (hdev == NULL) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	buf = kmalloc(len, GFP_KERNEL);
-	if (buf == NULL) {
-		rc = -ENOMEM;
-		goto cleanup;
-	}
+  buf = kmalloc(len, GFP_KERNEL);
+  if (buf == NULL) {
+    rc = -ENOMEM;
+    goto cleanup;
+  }
 
-	rc = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
-				USB_REQ_GET_DESCRIPTOR, USB_DIR_IN,
-				(USB_DT_STRING << 8) + idx,
-				0x0409, buf, len,
-				USB_CTRL_GET_TIMEOUT);
-	if (rc == -EPIPE) {
-		hid_dbg(hdev, "string descriptor #%hhu not found\n", idx);
-		goto cleanup;
-	} else if (rc < 0) {
-		hid_err(hdev,
-			"failed retrieving string descriptor #%hhu: %d\n",
-			idx, rc);
-		goto cleanup;
-	}
+  rc = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0), USB_REQ_GET_DESCRIPTOR,
+                       USB_DIR_IN, (USB_DT_STRING << 8) + idx, 0x0409, buf, len,
+                       USB_CTRL_GET_TIMEOUT);
+  if (rc == -EPIPE) {
+    hid_dbg(hdev, "string descriptor #%hhu not found\n", idx);
+    goto cleanup;
+  } else if (rc < 0) {
+    hid_err(hdev, "failed retrieving string descriptor #%hhu: %d\n", idx, rc);
+    goto cleanup;
+  }
 
-	if (pbuf != NULL) {
-		*pbuf = buf;
-		buf = NULL;
-	}
+  if (pbuf != NULL) {
+    *pbuf = buf;
+    buf = NULL;
+  }
 
 cleanup:
-	kfree(buf);
-	return rc;
+  kfree(buf);
+  return rc;
 }
 
 /**
@@ -199,10 +186,9 @@ cleanup:
  *
  * @pen:	Pen input parameters to cleanup. Cannot be NULL.
  */
-static void uclogic_params_pen_cleanup(struct uclogic_params_pen *pen)
-{
-	kfree(pen->desc_ptr);
-	memset(pen, 0, sizeof(*pen));
+static void uclogic_params_pen_cleanup(struct uclogic_params_pen *pen) {
+  kfree(pen->desc_ptr);
+  memset(pen, 0, sizeof(*pen));
 }
 
 /**
@@ -222,100 +208,94 @@ static void uclogic_params_pen_cleanup(struct uclogic_params_pen *pen)
  *	Zero, if successful. A negative errno code on error.
  */
 static int uclogic_params_pen_init_v1(struct uclogic_params_pen *pen,
-				      bool *pfound,
-				      struct hid_device *hdev)
-{
-	int rc;
-	bool found = false;
-	/* Buffer for (part of) the string descriptor */
-	__u8 *buf = NULL;
-	/* Minimum descriptor length required, maximum seen so far is 18 */
-	const int len = 12;
-	s32 resolution;
-	/* Pen report descriptor template parameters */
-	s32 desc_params[UCLOGIC_RDESC_PEN_PH_ID_NUM];
-	__u8 *desc_ptr = NULL;
+                                      bool *pfound, struct hid_device *hdev) {
+  int rc;
+  bool found = false;
+  /* Buffer for (part of) the string descriptor */
+  __u8 *buf = NULL;
+  /* Minimum descriptor length required, maximum seen so far is 18 */
+  const int len = 12;
+  s32 resolution;
+  /* Pen report descriptor template parameters */
+  s32 desc_params[UCLOGIC_RDESC_PEN_PH_ID_NUM];
+  __u8 *desc_ptr = NULL;
 
-	/* Check arguments */
-	if (pen == NULL || pfound == NULL || hdev == NULL) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (pen == NULL || pfound == NULL || hdev == NULL) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	/*
-	 * Read string descriptor containing pen input parameters.
-	 * The specific string descriptor and data were discovered by sniffing
-	 * the Windows driver traffic.
-	 * NOTE: This enables fully-functional tablet mode.
-	 */
-	rc = uclogic_params_get_str_desc(&buf, hdev, 100, len);
-	if (rc == -EPIPE) {
-		hid_dbg(hdev,
-			"string descriptor with pen parameters not found, assuming not compatible\n");
-		goto finish;
-	} else if (rc < 0) {
-		hid_err(hdev, "failed retrieving pen parameters: %d\n", rc);
-		goto cleanup;
-	} else if (rc != len) {
-		hid_dbg(hdev,
-			"string descriptor with pen parameters has invalid length (got %d, expected %d), assuming not compatible\n",
-			rc, len);
-		goto finish;
-	}
+  /*
+   * Read string descriptor containing pen input parameters.
+   * The specific string descriptor and data were discovered by sniffing
+   * the Windows driver traffic.
+   * NOTE: This enables fully-functional tablet mode.
+   */
+  rc = uclogic_params_get_str_desc(&buf, hdev, 100, len);
+  if (rc == -EPIPE) {
+    hid_dbg(hdev, "string descriptor with pen parameters not found, assuming "
+                  "not compatible\n");
+    goto finish;
+  } else if (rc < 0) {
+    hid_err(hdev, "failed retrieving pen parameters: %d\n", rc);
+    goto cleanup;
+  } else if (rc != len) {
+    hid_dbg(hdev,
+            "string descriptor with pen parameters has invalid length (got %d, "
+            "expected %d), assuming not compatible\n",
+            rc, len);
+    goto finish;
+  }
 
-	/*
-	 * Fill report descriptor parameters from the string descriptor
-	 */
-	desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] =
-		get_unaligned_le16(buf + 2);
-	desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] =
-		get_unaligned_le16(buf + 4);
-	desc_params[UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM] =
-		get_unaligned_le16(buf + 8);
-	resolution = get_unaligned_le16(buf + 10);
-	if (resolution == 0) {
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] = 0;
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] = 0;
-	} else {
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] =
-			desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] * 1000 /
-			resolution;
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] =
-			desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] * 1000 /
-			resolution;
-	}
-	kfree(buf);
-	buf = NULL;
+  /*
+   * Fill report descriptor parameters from the string descriptor
+   */
+  desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] = get_unaligned_le16(buf + 2);
+  desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] = get_unaligned_le16(buf + 4);
+  desc_params[UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM] =
+      get_unaligned_le16(buf + 8);
+  resolution = get_unaligned_le16(buf + 10);
+  if (resolution == 0) {
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] = 0;
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] = 0;
+  } else {
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] =
+        desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] * 1000 / resolution;
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] =
+        desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] * 1000 / resolution;
+  }
+  kfree(buf);
+  buf = NULL;
 
-	/*
-	 * Generate pen report descriptor
-	 */
-	desc_ptr = uclogic_rdesc_template_apply(
-				uclogic_rdesc_v1_pen_template_arr,
-				uclogic_rdesc_v1_pen_template_size,
-				desc_params, ARRAY_SIZE(desc_params));
-	if (desc_ptr == NULL) {
-		rc = -ENOMEM;
-		goto cleanup;
-	}
+  /*
+   * Generate pen report descriptor
+   */
+  desc_ptr = uclogic_rdesc_template_apply(uclogic_rdesc_v1_pen_template_arr,
+                                          uclogic_rdesc_v1_pen_template_size,
+                                          desc_params, ARRAY_SIZE(desc_params));
+  if (desc_ptr == NULL) {
+    rc = -ENOMEM;
+    goto cleanup;
+  }
 
-	/*
-	 * Fill-in the parameters
-	 */
-	memset(pen, 0, sizeof(*pen));
-	pen->desc_ptr = desc_ptr;
-	desc_ptr = NULL;
-	pen->desc_size = uclogic_rdesc_v1_pen_template_size;
-	pen->id = UCLOGIC_RDESC_V1_PEN_ID;
-	pen->inrange = UCLOGIC_PARAMS_PEN_INRANGE_INVERTED;
-	found = true;
+  /*
+   * Fill-in the parameters
+   */
+  memset(pen, 0, sizeof(*pen));
+  pen->desc_ptr = desc_ptr;
+  desc_ptr = NULL;
+  pen->desc_size = uclogic_rdesc_v1_pen_template_size;
+  pen->id = UCLOGIC_RDESC_V1_PEN_ID;
+  pen->inrange = UCLOGIC_PARAMS_PEN_INRANGE_INVERTED;
+  found = true;
 finish:
-	*pfound = found;
-	rc = 0;
+  *pfound = found;
+  rc = 0;
 cleanup:
-	kfree(desc_ptr);
-	kfree(buf);
-	return rc;
+  kfree(desc_ptr);
+  kfree(buf);
+  return rc;
 }
 
 /**
@@ -327,10 +307,9 @@ cleanup:
  * Returns:
  *	The retrieved number
  */
-static s32 uclogic_params_get_le24(const void *p)
-{
-	const __u8 *b = p;
-	return b[0] | (b[1] << 8UL) | (b[2] << 16UL);
+static s32 uclogic_params_get_le24(const void *p) {
+  const __u8 *b = p;
+  return b[0] | (b[1] << 8UL) | (b[2] << 16UL);
 }
 
 /**
@@ -360,131 +339,125 @@ static s32 uclogic_params_get_le24(const void *p)
  *	Zero, if successful. A negative errno code on error.
  */
 static int uclogic_params_pen_init_v2(struct uclogic_params_pen *pen,
-					bool *pfound,
-					__u8 **pparams_ptr,
-					size_t *pparams_len,
-					struct hid_device *hdev)
-{
-	int rc;
-	bool found = false;
-	/* Buffer for (part of) the parameter string descriptor */
-	__u8 *buf = NULL;
-	/* Parameter string descriptor required length */
-	const int params_len_min = 18;
-	/* Parameter string descriptor accepted length */
-	const int params_len_max = 32;
-	/* Parameter string descriptor received length */
-	int params_len;
-	size_t i;
-	s32 resolution;
-	/* Pen report descriptor template parameters */
-	s32 desc_params[UCLOGIC_RDESC_PEN_PH_ID_NUM];
-	__u8 *desc_ptr = NULL;
+                                      bool *pfound, __u8 **pparams_ptr,
+                                      size_t *pparams_len,
+                                      struct hid_device *hdev) {
+  int rc;
+  bool found = false;
+  /* Buffer for (part of) the parameter string descriptor */
+  __u8 *buf = NULL;
+  /* Parameter string descriptor required length */
+  const int params_len_min = 18;
+  /* Parameter string descriptor accepted length */
+  const int params_len_max = 32;
+  /* Parameter string descriptor received length */
+  int params_len;
+  size_t i;
+  s32 resolution;
+  /* Pen report descriptor template parameters */
+  s32 desc_params[UCLOGIC_RDESC_PEN_PH_ID_NUM];
+  __u8 *desc_ptr = NULL;
 
-	/* Check arguments */
-	if (pen == NULL || pfound == NULL || hdev == NULL) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (pen == NULL || pfound == NULL || hdev == NULL) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	/*
-	 * Read string descriptor containing pen input parameters.
-	 * The specific string descriptor and data were discovered by sniffing
-	 * the Windows driver traffic.
-	 * NOTE: This enables fully-functional tablet mode.
-	 */
-	rc = uclogic_params_get_str_desc(&buf, hdev, 200, params_len_max);
-	if (rc == -EPIPE) {
-		hid_dbg(hdev,
-			"string descriptor with pen parameters not found, assuming not compatible\n");
-		goto finish;
-	} else if (rc < 0) {
-		hid_err(hdev, "failed retrieving pen parameters: %d\n", rc);
-		goto cleanup;
-	} else if (rc < params_len_min) {
-		hid_dbg(hdev,
-			"string descriptor with pen parameters is too short (got %d, expected at least %d), assuming not compatible\n",
-			rc, params_len_min);
-		goto finish;
-	}
+  /*
+   * Read string descriptor containing pen input parameters.
+   * The specific string descriptor and data were discovered by sniffing
+   * the Windows driver traffic.
+   * NOTE: This enables fully-functional tablet mode.
+   */
+  rc = uclogic_params_get_str_desc(&buf, hdev, 200, params_len_max);
+  if (rc == -EPIPE) {
+    hid_dbg(hdev, "string descriptor with pen parameters not found, assuming "
+                  "not compatible\n");
+    goto finish;
+  } else if (rc < 0) {
+    hid_err(hdev, "failed retrieving pen parameters: %d\n", rc);
+    goto cleanup;
+  } else if (rc < params_len_min) {
+    hid_dbg(hdev,
+            "string descriptor with pen parameters is too short (got %d, "
+            "expected at least %d), assuming not compatible\n",
+            rc, params_len_min);
+    goto finish;
+  }
 
-	params_len = rc;
+  params_len = rc;
 
-	/*
-	 * Check it's not just a catch-all UTF-16LE-encoded ASCII
-	 * string (such as the model name) some tablets put into all
-	 * unknown string descriptors.
-	 */
-	for (i = 2;
-	     i < params_len &&
-		(buf[i] >= 0x20 && buf[i] < 0x7f && buf[i + 1] == 0);
-	     i += 2);
-	if (i >= params_len) {
-		hid_dbg(hdev,
-			"string descriptor with pen parameters seems to contain only text, assuming not compatible\n");
-		goto finish;
-	}
+  /*
+   * Check it's not just a catch-all UTF-16LE-encoded ASCII
+   * string (such as the model name) some tablets put into all
+   * unknown string descriptors.
+   */
+  for (i = 2;
+       i < params_len && (buf[i] >= 0x20 && buf[i] < 0x7f && buf[i + 1] == 0);
+       i += 2)
+    ;
+  if (i >= params_len) {
+    hid_dbg(hdev, "string descriptor with pen parameters seems to contain only "
+                  "text, assuming not compatible\n");
+    goto finish;
+  }
 
-	/*
-	 * Fill report descriptor parameters from the string descriptor
-	 */
-	desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] =
-		uclogic_params_get_le24(buf + 2);
-	desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] =
-		uclogic_params_get_le24(buf + 5);
-	desc_params[UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM] =
-		get_unaligned_le16(buf + 8);
-	resolution = get_unaligned_le16(buf + 10);
-	if (resolution == 0) {
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] = 0;
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] = 0;
-	} else {
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] =
-			desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] * 1000 /
-			resolution;
-		desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] =
-			desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] * 1000 /
-			resolution;
-	}
+  /*
+   * Fill report descriptor parameters from the string descriptor
+   */
+  desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] = uclogic_params_get_le24(buf + 2);
+  desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] = uclogic_params_get_le24(buf + 5);
+  desc_params[UCLOGIC_RDESC_PEN_PH_ID_PRESSURE_LM] =
+      get_unaligned_le16(buf + 8);
+  resolution = get_unaligned_le16(buf + 10);
+  if (resolution == 0) {
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] = 0;
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] = 0;
+  } else {
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_PM] =
+        desc_params[UCLOGIC_RDESC_PEN_PH_ID_X_LM] * 1000 / resolution;
+    desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_PM] =
+        desc_params[UCLOGIC_RDESC_PEN_PH_ID_Y_LM] * 1000 / resolution;
+  }
 
-	/*
-	 * Generate pen report descriptor
-	 */
-	desc_ptr = uclogic_rdesc_template_apply(
-				uclogic_rdesc_v2_pen_template_arr,
-				uclogic_rdesc_v2_pen_template_size,
-				desc_params, ARRAY_SIZE(desc_params));
-	if (desc_ptr == NULL) {
-		rc = -ENOMEM;
-		goto cleanup;
-	}
+  /*
+   * Generate pen report descriptor
+   */
+  desc_ptr = uclogic_rdesc_template_apply(uclogic_rdesc_v2_pen_template_arr,
+                                          uclogic_rdesc_v2_pen_template_size,
+                                          desc_params, ARRAY_SIZE(desc_params));
+  if (desc_ptr == NULL) {
+    rc = -ENOMEM;
+    goto cleanup;
+  }
 
-	/*
-	 * Fill-in the parameters
-	 */
-	memset(pen, 0, sizeof(*pen));
-	pen->desc_ptr = desc_ptr;
-	desc_ptr = NULL;
-	pen->desc_size = uclogic_rdesc_v2_pen_template_size;
-	pen->id = UCLOGIC_RDESC_V2_PEN_ID;
-	pen->inrange = UCLOGIC_PARAMS_PEN_INRANGE_NONE;
-	pen->fragmented_hires = true;
-	pen->tilt_y_flipped = true;
-	found = true;
-	if (pparams_ptr != NULL) {
-		*pparams_ptr = buf;
-		buf = NULL;
-	}
-	if (pparams_len != NULL) {
-		*pparams_len = params_len;
-	}
+  /*
+   * Fill-in the parameters
+   */
+  memset(pen, 0, sizeof(*pen));
+  pen->desc_ptr = desc_ptr;
+  desc_ptr = NULL;
+  pen->desc_size = uclogic_rdesc_v2_pen_template_size;
+  pen->id = UCLOGIC_RDESC_V2_PEN_ID;
+  pen->inrange = UCLOGIC_PARAMS_PEN_INRANGE_NONE;
+  pen->fragmented_hires = true;
+  pen->tilt_y_flipped = true;
+  found = true;
+  if (pparams_ptr != NULL) {
+    *pparams_ptr = buf;
+    buf = NULL;
+  }
+  if (pparams_len != NULL) {
+    *pparams_len = params_len;
+  }
 finish:
-	*pfound = found;
-	rc = 0;
+  *pfound = found;
+  rc = 0;
 cleanup:
-	kfree(desc_ptr);
-	kfree(buf);
-	return rc;
+  kfree(desc_ptr);
+  kfree(buf);
+  return rc;
 }
 
 /**
@@ -494,10 +467,9 @@ cleanup:
  *
  * @frame:	Frame controls input parameters to cleanup. Cannot be NULL.
  */
-static void uclogic_params_frame_cleanup(struct uclogic_params_frame *frame)
-{
-	kfree(frame->desc_ptr);
-	memset(frame, 0, sizeof(*frame));
+static void uclogic_params_frame_cleanup(struct uclogic_params_frame *frame) {
+  kfree(frame->desc_ptr);
+  memset(frame, 0, sizeof(*frame));
 }
 
 /**
@@ -515,26 +487,24 @@ static void uclogic_params_frame_cleanup(struct uclogic_params_frame *frame)
  * Returns:
  *	Zero, if successful. A negative errno code on error.
  */
-static int uclogic_params_frame_init_with_desc(
-					struct uclogic_params_frame *frame,
-					const __u8 *desc_ptr,
-					size_t desc_size,
-					unsigned int id)
-{
-	__u8 *copy_desc_ptr;
+static int
+uclogic_params_frame_init_with_desc(struct uclogic_params_frame *frame,
+                                    const __u8 *desc_ptr, size_t desc_size,
+                                    unsigned int id) {
+  __u8 *copy_desc_ptr;
 
-	if (frame == NULL || (desc_ptr == NULL && desc_size != 0))
-		return -EINVAL;
+  if (frame == NULL || (desc_ptr == NULL && desc_size != 0))
+    return -EINVAL;
 
-	copy_desc_ptr = kmemdup(desc_ptr, desc_size, GFP_KERNEL);
-	if (copy_desc_ptr == NULL)
-		return -ENOMEM;
+  copy_desc_ptr = kmemdup(desc_ptr, desc_size, GFP_KERNEL);
+  if (copy_desc_ptr == NULL)
+    return -ENOMEM;
 
-	memset(frame, 0, sizeof(*frame));
-	frame->desc_ptr = copy_desc_ptr;
-	frame->desc_size = desc_size;
-	frame->id = id;
-	return 0;
+  memset(frame, 0, sizeof(*frame));
+  frame->desc_ptr = copy_desc_ptr;
+  frame->desc_size = desc_size;
+  frame->id = id;
+  return 0;
 }
 
 /**
@@ -554,57 +524,51 @@ static int uclogic_params_frame_init_with_desc(
  *	Zero, if successful. A negative errno code on error.
  */
 static int uclogic_params_frame_init_v1(struct uclogic_params_frame *frame,
-					bool *pfound,
-					struct hid_device *hdev)
-{
-	int rc;
-	bool found = false;
-	struct usb_device *usb_dev = hid_to_usb_dev(hdev);
-	char *str_buf = NULL;
-	const size_t str_len = 16;
+                                        bool *pfound, struct hid_device *hdev) {
+  int rc;
+  bool found = false;
+  struct usb_device *usb_dev = hid_to_usb_dev(hdev);
+  char *str_buf = NULL;
+  const size_t str_len = 16;
 
-	/* Check arguments */
-	if (frame == NULL || pfound == NULL || hdev == NULL) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (frame == NULL || pfound == NULL || hdev == NULL) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	/*
-	 * Enable generic button mode
-	 */
-	str_buf = kzalloc(str_len, GFP_KERNEL);
-	if (str_buf == NULL) {
-		rc = -ENOMEM;
-		goto cleanup;
-	}
+  /*
+   * Enable generic button mode
+   */
+  str_buf = kzalloc(str_len, GFP_KERNEL);
+  if (str_buf == NULL) {
+    rc = -ENOMEM;
+    goto cleanup;
+  }
 
-	rc = usb_string(usb_dev, 123, str_buf, str_len);
-	if (rc == -EPIPE) {
-		hid_dbg(hdev,
-			"generic button -enabling string descriptor not found\n");
-	} else if (rc < 0) {
-		goto cleanup;
-	} else if (strncmp(str_buf, "HK On", rc) != 0) {
-		hid_dbg(hdev,
-			"invalid response to enabling generic buttons: \"%s\"\n",
-			str_buf);
-	} else {
-		hid_dbg(hdev, "generic buttons enabled\n");
-		rc = uclogic_params_frame_init_with_desc(
-				frame,
-				uclogic_rdesc_v1_frame_arr,
-				uclogic_rdesc_v1_frame_size,
-				UCLOGIC_RDESC_V1_FRAME_ID);
-		if (rc != 0)
-			goto cleanup;
-		found = true;
-	}
+  rc = usb_string(usb_dev, 123, str_buf, str_len);
+  if (rc == -EPIPE) {
+    hid_dbg(hdev, "generic button -enabling string descriptor not found\n");
+  } else if (rc < 0) {
+    goto cleanup;
+  } else if (strncmp(str_buf, "HK On", rc) != 0) {
+    hid_dbg(hdev, "invalid response to enabling generic buttons: \"%s\"\n",
+            str_buf);
+  } else {
+    hid_dbg(hdev, "generic buttons enabled\n");
+    rc = uclogic_params_frame_init_with_desc(frame, uclogic_rdesc_v1_frame_arr,
+                                             uclogic_rdesc_v1_frame_size,
+                                             UCLOGIC_RDESC_V1_FRAME_ID);
+    if (rc != 0)
+      goto cleanup;
+    found = true;
+  }
 
-	*pfound = found;
-	rc = 0;
+  *pfound = found;
+  rc = 0;
 cleanup:
-	kfree(str_buf);
-	return rc;
+  kfree(str_buf);
+  return rc;
 }
 
 /**
@@ -614,17 +578,16 @@ cleanup:
  *
  * @params:	Input parameters to cleanup. Cannot be NULL.
  */
-void uclogic_params_cleanup(struct uclogic_params *params)
-{
-	if (!params->invalid) {
-		size_t i;
-		kfree(params->desc_ptr);
-		uclogic_params_pen_cleanup(&params->pen);
-		for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
-			uclogic_params_frame_cleanup(&params->frame_list[i]);
-		}
-		memset(params, 0, sizeof(*params));
-	}
+void uclogic_params_cleanup(struct uclogic_params *params) {
+  if (!params->invalid) {
+    size_t i;
+    kfree(params->desc_ptr);
+    uclogic_params_pen_cleanup(&params->pen);
+    for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
+      uclogic_params_frame_cleanup(&params->frame_list[i]);
+    }
+    memset(params, 0, sizeof(*params));
+  }
 }
 
 /**
@@ -645,57 +608,54 @@ void uclogic_params_cleanup(struct uclogic_params *params)
  *	-EINVAL, if invalid arguments are supplied.
  *	-ENOMEM, if failed to allocate memory.
  */
-int uclogic_params_get_desc(const struct uclogic_params *params,
-				__u8 **pdesc,
-				unsigned int *psize)
-{
-	int rc = -ENOMEM;
-	bool present = false;
-	unsigned int size = 0;
-	__u8 *desc = NULL;
-	size_t i;
+int uclogic_params_get_desc(const struct uclogic_params *params, __u8 **pdesc,
+                            unsigned int *psize) {
+  int rc = -ENOMEM;
+  bool present = false;
+  unsigned int size = 0;
+  __u8 *desc = NULL;
+  size_t i;
 
-	/* Check arguments */
-	if (params == NULL || pdesc == NULL || psize == NULL)
-		return -EINVAL;
+  /* Check arguments */
+  if (params == NULL || pdesc == NULL || psize == NULL)
+    return -EINVAL;
 
-	/* Concatenate descriptors */
-#define ADD_DESC(_desc_ptr, _desc_size) \
-	do {                                                        \
-		unsigned int new_size;                              \
-		__u8 *new_desc;                                     \
-		if ((_desc_ptr) == NULL) {                          \
-			break;                                      \
-		}                                                   \
-		new_size = size + (_desc_size);                     \
-		new_desc = krealloc(desc, new_size, GFP_KERNEL);    \
-		if (new_desc == NULL) {                             \
-			goto cleanup;                               \
-		}                                                   \
-		memcpy(new_desc + size, (_desc_ptr), (_desc_size)); \
-		desc = new_desc;                                    \
-		size = new_size;                                    \
-		present = true;                                     \
-	} while (0)
+    /* Concatenate descriptors */
+#define ADD_DESC(_desc_ptr, _desc_size)                                        \
+  do {                                                                         \
+    unsigned int new_size;                                                     \
+    __u8 *new_desc;                                                            \
+    if ((_desc_ptr) == NULL) {                                                 \
+      break;                                                                   \
+    }                                                                          \
+    new_size = size + (_desc_size);                                            \
+    new_desc = krealloc(desc, new_size, GFP_KERNEL);                           \
+    if (new_desc == NULL) {                                                    \
+      goto cleanup;                                                            \
+    }                                                                          \
+    memcpy(new_desc + size, (_desc_ptr), (_desc_size));                        \
+    desc = new_desc;                                                           \
+    size = new_size;                                                           \
+    present = true;                                                            \
+  } while (0)
 
-	ADD_DESC(params->desc_ptr, params->desc_size);
-	ADD_DESC(params->pen.desc_ptr, params->pen.desc_size);
-	for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
-		ADD_DESC(params->frame_list[i].desc_ptr,
-				params->frame_list[i].desc_size);
-	}
+  ADD_DESC(params->desc_ptr, params->desc_size);
+  ADD_DESC(params->pen.desc_ptr, params->pen.desc_size);
+  for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
+    ADD_DESC(params->frame_list[i].desc_ptr, params->frame_list[i].desc_size);
+  }
 
 #undef ADD_DESC
 
-	if (present) {
-		*pdesc = desc;
-		*psize = size;
-		desc = NULL;
-	}
-	rc = 0;
+  if (present) {
+    *pdesc = desc;
+    *psize = size;
+    desc = NULL;
+  }
+  rc = 0;
 cleanup:
-	kfree(desc);
-	return rc;
+  kfree(desc);
+  return rc;
 }
 
 /**
@@ -705,9 +665,8 @@ cleanup:
  * @params:		Parameters to initialize (to be cleaned with
  *			uclogic_params_cleanup()). Cannot be NULL.
  */
-static void uclogic_params_init_invalid(struct uclogic_params *params)
-{
-	params->invalid = true;
+static void uclogic_params_init_invalid(struct uclogic_params *params) {
+  params->invalid = true;
 }
 
 /**
@@ -732,50 +691,49 @@ static void uclogic_params_init_invalid(struct uclogic_params *params)
  *	-ENOMEM, if failed to allocate memory.
  */
 static int uclogic_params_init_with_opt_desc(struct uclogic_params *params,
-					     struct hid_device *hdev,
-					     unsigned int orig_desc_size,
-					     __u8 *desc_ptr,
-					     unsigned int desc_size)
-{
-	__u8 *desc_copy_ptr = NULL;
-	unsigned int desc_copy_size;
-	int rc;
+                                             struct hid_device *hdev,
+                                             unsigned int orig_desc_size,
+                                             __u8 *desc_ptr,
+                                             unsigned int desc_size) {
+  __u8 *desc_copy_ptr = NULL;
+  unsigned int desc_copy_size;
+  int rc;
 
-	/* Check arguments */
-	if (params == NULL || hdev == NULL ||
-	    (desc_ptr == NULL && desc_size != 0)) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (params == NULL || hdev == NULL || (desc_ptr == NULL && desc_size != 0)) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	/* Replace report descriptor, if it matches */
-	if (hdev->dev_rsize == orig_desc_size) {
-		hid_dbg(hdev,
-			"device report descriptor matches the expected size, replacing\n");
-		desc_copy_ptr = kmemdup(desc_ptr, desc_size, GFP_KERNEL);
-		if (desc_copy_ptr == NULL) {
-			rc = -ENOMEM;
-			goto cleanup;
-		}
-		desc_copy_size = desc_size;
-	} else {
-		hid_dbg(hdev,
-			"device report descriptor doesn't match the expected size (%u != %u), preserving\n",
-			hdev->dev_rsize, orig_desc_size);
-		desc_copy_ptr = NULL;
-		desc_copy_size = 0;
-	}
+  /* Replace report descriptor, if it matches */
+  if (hdev->dev_rsize == orig_desc_size) {
+    hid_dbg(hdev,
+            "device report descriptor matches the expected size, replacing\n");
+    desc_copy_ptr = kmemdup(desc_ptr, desc_size, GFP_KERNEL);
+    if (desc_copy_ptr == NULL) {
+      rc = -ENOMEM;
+      goto cleanup;
+    }
+    desc_copy_size = desc_size;
+  } else {
+    hid_dbg(hdev,
+            "device report descriptor doesn't match the expected size (%u != "
+            "%u), preserving\n",
+            hdev->dev_rsize, orig_desc_size);
+    desc_copy_ptr = NULL;
+    desc_copy_size = 0;
+  }
 
-	/* Output parameters */
-	memset(params, 0, sizeof(*params));
-	params->desc_ptr = desc_copy_ptr;
-	desc_copy_ptr = NULL;
-	params->desc_size = desc_copy_size;
+  /* Output parameters */
+  memset(params, 0, sizeof(*params));
+  params->desc_ptr = desc_copy_ptr;
+  desc_copy_ptr = NULL;
+  params->desc_size = desc_copy_size;
 
-	rc = 0;
+  rc = 0;
 cleanup:
-	kfree(desc_copy_ptr);
-	return rc;
+  kfree(desc_copy_ptr);
+  return rc;
 }
 
 /**
@@ -792,210 +750,190 @@ cleanup:
  *	Zero, if successful. A negative errno code on error.
  */
 static int uclogic_params_huion_init(struct uclogic_params *params,
-				     struct hid_device *hdev)
-{
-	int rc;
-	struct usb_device *udev = hid_to_usb_dev(hdev);
-	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
-	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
-	bool found;
-	/* The resulting parameters (noop) */
-	struct uclogic_params p = {0, };
-	static const char transition_ver[] = "HUION_T153_160607";
-	char *ver_ptr = NULL;
-	const size_t ver_len = sizeof(transition_ver) + 1;
-	__u8 *params_ptr = NULL;
-	size_t params_len = 0;
-	/* Parameters string descriptor of a model with touch ring (HS610) */
-	const __u8 touch_ring_model_params_buf[] = {
-		0x13, 0x03, 0x70, 0xC6, 0x00, 0x06, 0x7C, 0x00,
-		0xFF, 0x1F, 0xD8, 0x13, 0x03, 0x0D, 0x10, 0x01,
-		0x04, 0x3C, 0x3E
-	};
+                                     struct hid_device *hdev) {
+  int rc;
+  struct usb_device *udev = hid_to_usb_dev(hdev);
+  struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
+  __u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
+  bool found;
+  /* The resulting parameters (noop) */
+  struct uclogic_params p = {
+      0,
+  };
+  static const char transition_ver[] = "HUION_T153_160607";
+  char *ver_ptr = NULL;
+  const size_t ver_len = sizeof(transition_ver) + 1;
+  __u8 *params_ptr = NULL;
+  size_t params_len = 0;
+  /* Parameters string descriptor of a model with touch ring (HS610) */
+  const __u8 touch_ring_model_params_buf[] = {
+      0x13, 0x03, 0x70, 0xC6, 0x00, 0x06, 0x7C, 0x00, 0xFF, 0x1F,
+      0xD8, 0x13, 0x03, 0x0D, 0x10, 0x01, 0x04, 0x3C, 0x3E};
 
-	/* Check arguments */
-	if (params == NULL || hdev == NULL) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (params == NULL || hdev == NULL) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	/* If it's a custom keyboard interface */
-	if (bInterfaceNumber == 1) {
-		/* Keep everything intact, but mark pen usage invalid */
-		p.pen.usage_invalid = true;
-		goto output;
-	/* Else, if it's not a pen interface */
-	} else if (bInterfaceNumber != 0) {
-		uclogic_params_init_invalid(&p);
-		goto output;
-	}
+  /* If it's a custom keyboard interface */
+  if (bInterfaceNumber == 1) {
+    /* Keep everything intact, but mark pen usage invalid */
+    p.pen.usage_invalid = true;
+    goto output;
+    /* Else, if it's not a pen interface */
+  } else if (bInterfaceNumber != 0) {
+    uclogic_params_init_invalid(&p);
+    goto output;
+  }
 
-	/* Try to get firmware version */
-	ver_ptr = kzalloc(ver_len, GFP_KERNEL);
-	if (ver_ptr == NULL) {
-		rc = -ENOMEM;
-		goto cleanup;
-	}
-	rc = usb_string(udev, 201, ver_ptr, ver_len);
-	if (rc == -EPIPE) {
-		*ver_ptr = '\0';
-	} else if (rc < 0) {
-		hid_err(hdev,
-			"failed retrieving Huion firmware version: %d\n", rc);
-		goto cleanup;
-	}
+  /* Try to get firmware version */
+  ver_ptr = kzalloc(ver_len, GFP_KERNEL);
+  if (ver_ptr == NULL) {
+    rc = -ENOMEM;
+    goto cleanup;
+  }
+  rc = usb_string(udev, 201, ver_ptr, ver_len);
+  if (rc == -EPIPE) {
+    *ver_ptr = '\0';
+  } else if (rc < 0) {
+    hid_err(hdev, "failed retrieving Huion firmware version: %d\n", rc);
+    goto cleanup;
+  }
 
-	/* If this is a transition firmware */
-	if (strcmp(ver_ptr, transition_ver) == 0) {
-		hid_dbg(hdev,
-			"transition firmware detected, not probing pen v2 parameters\n");
-	} else {
-		/* Try to probe v2 pen parameters */
-		rc = uclogic_params_pen_init_v2(&p.pen, &found,
-						&params_ptr, &params_len,
-						hdev);
-		if (rc != 0) {
-			hid_err(hdev,
-				"failed probing pen v2 parameters: %d\n", rc);
-			goto cleanup;
-		} else if (found) {
-			hid_dbg(hdev, "pen v2 parameters found\n");
-			/* Create v2 frame button parameters */
-			rc = uclogic_params_frame_init_with_desc(
-					&p.frame_list[0],
-					uclogic_rdesc_v2_frame_buttons_arr,
-					uclogic_rdesc_v2_frame_buttons_size,
-					UCLOGIC_RDESC_V2_FRAME_BUTTONS_ID);
-			if (rc != 0) {
-				hid_err(hdev,
-					"failed creating v2 frame button "
-					"parameters: %d\n",
-					rc);
-				goto cleanup;
-			}
+  /* If this is a transition firmware */
+  if (strcmp(ver_ptr, transition_ver) == 0) {
+    hid_dbg(hdev,
+            "transition firmware detected, not probing pen v2 parameters\n");
+  } else {
+    /* Try to probe v2 pen parameters */
+    rc = uclogic_params_pen_init_v2(&p.pen, &found, &params_ptr, &params_len,
+                                    hdev);
+    if (rc != 0) {
+      hid_err(hdev, "failed probing pen v2 parameters: %d\n", rc);
+      goto cleanup;
+    } else if (found) {
+      hid_dbg(hdev, "pen v2 parameters found\n");
+      /* Create v2 frame button parameters */
+      rc = uclogic_params_frame_init_with_desc(
+          &p.frame_list[0], uclogic_rdesc_v2_frame_buttons_arr,
+          uclogic_rdesc_v2_frame_buttons_size,
+          UCLOGIC_RDESC_V2_FRAME_BUTTONS_ID);
+      if (rc != 0) {
+        hid_err(hdev,
+                "failed creating v2 frame button "
+                "parameters: %d\n",
+                rc);
+        goto cleanup;
+      }
 
-			/* Link from pen sub-report */
-			p.pen.subreport_list[0].value = 0xe0;
-			p.pen.subreport_list[0].id =
-				UCLOGIC_RDESC_V2_FRAME_BUTTONS_ID;
+      /* Link from pen sub-report */
+      p.pen.subreport_list[0].value = 0xe0;
+      p.pen.subreport_list[0].id = UCLOGIC_RDESC_V2_FRAME_BUTTONS_ID;
 
-			/* If this is the model with touch ring */
-			if (params_ptr != NULL &&
-			    params_len == sizeof(touch_ring_model_params_buf) &&
-			    memcmp(params_ptr, touch_ring_model_params_buf,
-				   params_len) == 0) {
-				/* Create touch ring parameters */
-				rc = uclogic_params_frame_init_with_desc(
-					&p.frame_list[1],
-					uclogic_rdesc_v2_frame_touch_ring_arr,
-					uclogic_rdesc_v2_frame_touch_ring_size,
-					UCLOGIC_RDESC_V2_FRAME_TOUCH_ID);
-				if (rc != 0) {
-					hid_err(hdev,
-						"failed creating v2 frame touch "
-						"ring parameters: %d\n",
-						rc);
-					goto cleanup;
-				}
-				p.frame_list[1].suffix = "Touch Ring";
-				p.frame_list[1].dev_id_byte =
-					UCLOGIC_RDESC_V2_FRAME_TOUCH_DEV_ID_BYTE;
-				p.frame_list[1].touch_byte = 5;
-				p.frame_list[1].touch_max = 12;
-				p.frame_list[1].touch_flip_at = 7;
-			} else {
-				/* Create touch strip parameters */
-				rc = uclogic_params_frame_init_with_desc(
-					&p.frame_list[1],
-					uclogic_rdesc_v2_frame_touch_strip_arr,
-					uclogic_rdesc_v2_frame_touch_strip_size,
-					UCLOGIC_RDESC_V2_FRAME_TOUCH_ID);
-				if (rc != 0) {
-					hid_err(hdev,
-						"failed creating v2 frame touch "
-						"strip parameters: %d\n",
-						rc);
-					goto cleanup;
-				}
-				p.frame_list[1].suffix = "Touch Strip";
-				p.frame_list[1].dev_id_byte =
-					UCLOGIC_RDESC_V2_FRAME_TOUCH_DEV_ID_BYTE;
-				p.frame_list[1].touch_byte = 5;
-				p.frame_list[1].touch_max = 8;
-			}
+      /* If this is the model with touch ring */
+      if (params_ptr != NULL &&
+          params_len == sizeof(touch_ring_model_params_buf) &&
+          memcmp(params_ptr, touch_ring_model_params_buf, params_len) == 0) {
+        /* Create touch ring parameters */
+        rc = uclogic_params_frame_init_with_desc(
+            &p.frame_list[1], uclogic_rdesc_v2_frame_touch_ring_arr,
+            uclogic_rdesc_v2_frame_touch_ring_size,
+            UCLOGIC_RDESC_V2_FRAME_TOUCH_ID);
+        if (rc != 0) {
+          hid_err(hdev,
+                  "failed creating v2 frame touch "
+                  "ring parameters: %d\n",
+                  rc);
+          goto cleanup;
+        }
+        p.frame_list[1].suffix = "Touch Ring";
+        p.frame_list[1].dev_id_byte = UCLOGIC_RDESC_V2_FRAME_TOUCH_DEV_ID_BYTE;
+        p.frame_list[1].touch_byte = 5;
+        p.frame_list[1].touch_max = 12;
+        p.frame_list[1].touch_flip_at = 7;
+      } else {
+        /* Create touch strip parameters */
+        rc = uclogic_params_frame_init_with_desc(
+            &p.frame_list[1], uclogic_rdesc_v2_frame_touch_strip_arr,
+            uclogic_rdesc_v2_frame_touch_strip_size,
+            UCLOGIC_RDESC_V2_FRAME_TOUCH_ID);
+        if (rc != 0) {
+          hid_err(hdev,
+                  "failed creating v2 frame touch "
+                  "strip parameters: %d\n",
+                  rc);
+          goto cleanup;
+        }
+        p.frame_list[1].suffix = "Touch Strip";
+        p.frame_list[1].dev_id_byte = UCLOGIC_RDESC_V2_FRAME_TOUCH_DEV_ID_BYTE;
+        p.frame_list[1].touch_byte = 5;
+        p.frame_list[1].touch_max = 8;
+      }
 
-			/* Link from pen sub-report */
-			p.pen.subreport_list[1].value = 0xf0;
-			p.pen.subreport_list[1].id =
-				UCLOGIC_RDESC_V2_FRAME_TOUCH_ID;
+      /* Link from pen sub-report */
+      p.pen.subreport_list[1].value = 0xf0;
+      p.pen.subreport_list[1].id = UCLOGIC_RDESC_V2_FRAME_TOUCH_ID;
 
-			/* Create v2 frame dial parameters */
-			rc = uclogic_params_frame_init_with_desc(
-					&p.frame_list[2],
-					uclogic_rdesc_v2_frame_dial_arr,
-					uclogic_rdesc_v2_frame_dial_size,
-					UCLOGIC_RDESC_V2_FRAME_DIAL_ID);
-			if (rc != 0) {
-				hid_err(hdev,
-					"failed creating v2 frame dial "
-					"parameters: %d\n",
-					rc);
-				goto cleanup;
-			}
-			p.frame_list[2].suffix = "Dial";
-			p.frame_list[2].dev_id_byte =
-				UCLOGIC_RDESC_V2_FRAME_DIAL_DEV_ID_BYTE;
-			p.frame_list[2].bitmap_dial_byte = 5;
+      /* Create v2 frame dial parameters */
+      rc = uclogic_params_frame_init_with_desc(
+          &p.frame_list[2], uclogic_rdesc_v2_frame_dial_arr,
+          uclogic_rdesc_v2_frame_dial_size, UCLOGIC_RDESC_V2_FRAME_DIAL_ID);
+      if (rc != 0) {
+        hid_err(hdev,
+                "failed creating v2 frame dial "
+                "parameters: %d\n",
+                rc);
+        goto cleanup;
+      }
+      p.frame_list[2].suffix = "Dial";
+      p.frame_list[2].dev_id_byte = UCLOGIC_RDESC_V2_FRAME_DIAL_DEV_ID_BYTE;
+      p.frame_list[2].bitmap_dial_byte = 5;
 
-			/* Link from pen sub-report */
-			p.pen.subreport_list[2].value = 0xf1;
-			p.pen.subreport_list[2].id =
-				UCLOGIC_RDESC_V2_FRAME_DIAL_ID;
+      /* Link from pen sub-report */
+      p.pen.subreport_list[2].value = 0xf1;
+      p.pen.subreport_list[2].id = UCLOGIC_RDESC_V2_FRAME_DIAL_ID;
 
-			goto output;
-		}
-		hid_dbg(hdev, "pen v2 parameters not found\n");
-	}
+      goto output;
+    }
+    hid_dbg(hdev, "pen v2 parameters not found\n");
+  }
 
-	/* Try to probe v1 pen parameters */
-	rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
-	if (rc != 0) {
-		hid_err(hdev,
-			"failed probing pen v1 parameters: %d\n", rc);
-		goto cleanup;
-	} else if (found) {
-		hid_dbg(hdev, "pen v1 parameters found\n");
-		/* Try to probe v1 frame */
-		rc = uclogic_params_frame_init_v1(&p.frame_list[0],
-						  &found, hdev);
-		if (rc != 0) {
-			hid_err(hdev, "v1 frame probing failed: %d\n", rc);
-			goto cleanup;
-		}
-		hid_dbg(hdev, "frame v1 parameters%s found\n",
-			(found ? "" : " not"));
-		if (found) {
-			/* Link frame button subreports from pen reports */
-			p.pen.subreport_list[0].value = 0xe0;
-			p.pen.subreport_list[0].id =
-				UCLOGIC_RDESC_V1_FRAME_ID;
-		}
-		goto output;
-	}
-	hid_dbg(hdev, "pen v1 parameters not found\n");
+  /* Try to probe v1 pen parameters */
+  rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
+  if (rc != 0) {
+    hid_err(hdev, "failed probing pen v1 parameters: %d\n", rc);
+    goto cleanup;
+  } else if (found) {
+    hid_dbg(hdev, "pen v1 parameters found\n");
+    /* Try to probe v1 frame */
+    rc = uclogic_params_frame_init_v1(&p.frame_list[0], &found, hdev);
+    if (rc != 0) {
+      hid_err(hdev, "v1 frame probing failed: %d\n", rc);
+      goto cleanup;
+    }
+    hid_dbg(hdev, "frame v1 parameters%s found\n", (found ? "" : " not"));
+    if (found) {
+      /* Link frame button subreports from pen reports */
+      p.pen.subreport_list[0].value = 0xe0;
+      p.pen.subreport_list[0].id = UCLOGIC_RDESC_V1_FRAME_ID;
+    }
+    goto output;
+  }
+  hid_dbg(hdev, "pen v1 parameters not found\n");
 
-	uclogic_params_init_invalid(&p);
+  uclogic_params_init_invalid(&p);
 
 output:
-	/* Output parameters */
-	memcpy(params, &p, sizeof(*params));
-	memset(&p, 0, sizeof(p));
-	rc = 0;
+  /* Output parameters */
+  memcpy(params, &p, sizeof(*params));
+  memset(&p, 0, sizeof(p));
+  rc = 0;
 cleanup:
-	kfree(params_ptr);
-	kfree(ver_ptr);
-	uclogic_params_cleanup(&p);
-	return rc;
+  kfree(params_ptr);
+  kfree(ver_ptr);
+  uclogic_params_cleanup(&p);
+  return rc;
 }
 
 /**
@@ -1013,299 +951,253 @@ cleanup:
  *	Zero, if successful. A negative errno code on error.
  */
 int uclogic_params_init(struct uclogic_params *params,
-			struct hid_device *hdev)
-{
-	int rc;
-	struct usb_device *udev = hid_to_usb_dev(hdev);
-	__u8  bNumInterfaces = udev->config->desc.bNumInterfaces;
-	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
-	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
-	bool found;
-	/* The resulting parameters (noop) */
-	struct uclogic_params p = {0, };
+                        struct hid_device *hdev) {
+  int rc;
+  struct usb_device *udev = hid_to_usb_dev(hdev);
+  __u8 bNumInterfaces = udev->config->desc.bNumInterfaces;
+  struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
+  __u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
+  bool found;
+  /* The resulting parameters (noop) */
+  struct uclogic_params p = {
+      0,
+  };
 
-	/* Check arguments */
-	if (params == NULL || hdev == NULL
-#if KERNEL_VERSION(4, 14, 0) <= LINUX_VERSION_CODE
-	    || !hid_is_using_ll_driver(hdev, &usb_hid_driver)
-#endif
-	   ) {
-		rc = -EINVAL;
-		goto cleanup;
-	}
+  /* Check arguments */
+  if (params == NULL || hdev == NULL || 0) {
+    rc = -EINVAL;
+    goto cleanup;
+  }
 
-	/*
-	 * Set replacement report descriptor if the original matches the
-	 * specified size. Otherwise keep interface unchanged.
-	 */
-#define WITH_OPT_DESC(_orig_desc_token, _new_desc_token) \
-	uclogic_params_init_with_opt_desc(                  \
-		&p, hdev,                                   \
-		UCLOGIC_RDESC_##_orig_desc_token##_SIZE,    \
-		uclogic_rdesc_##_new_desc_token##_arr,      \
-		uclogic_rdesc_##_new_desc_token##_size)
+  /*
+   * Set replacement report descriptor if the original matches the
+   * specified size. Otherwise keep interface unchanged.
+   */
+#define WITH_OPT_DESC(_orig_desc_token, _new_desc_token)                       \
+  uclogic_params_init_with_opt_desc(&p, hdev,                                  \
+                                    UCLOGIC_RDESC_##_orig_desc_token##_SIZE,   \
+                                    uclogic_rdesc_##_new_desc_token##_arr,     \
+                                    uclogic_rdesc_##_new_desc_token##_size)
 
-#define VID_PID(_vid, _pid) \
-	(((__u32)(_vid) << 16) | ((__u32)(_pid) & U16_MAX))
+#define VID_PID(_vid, _pid) (((__u32)(_vid) << 16) | ((__u32)(_pid)&U16_MAX))
 
-	/*
-	 * Handle specific interfaces for specific tablets.
-	 *
-	 * Observe the following logic:
-	 *
-	 * If the interface is recognized as producing certain useful input:
-	 *	Mark interface as valid.
-	 *	Output interface parameters.
-	 * Else, if the interface is recognized as *not* producing any useful
-	 * input:
-	 *	Mark interface as invalid.
-	 * Else:
-	 *	Mark interface as valid.
-	 *	Output noop parameters.
-	 *
-	 * Rule of thumb: it is better to disable a broken interface than let
-	 *		  it spew garbage input.
-	 */
+  /*
+   * Handle specific interfaces for specific tablets.
+   *
+   * Observe the following logic:
+   *
+   * If the interface is recognized as producing certain useful input:
+   *	Mark interface as valid.
+   *	Output interface parameters.
+   * Else, if the interface is recognized as *not* producing any useful
+   * input:
+   *	Mark interface as invalid.
+   * Else:
+   *	Mark interface as valid.
+   *	Output noop parameters.
+   *
+   * Rule of thumb: it is better to disable a broken interface than let
+   *		  it spew garbage input.
+   */
 
-	switch (VID_PID(hdev->vendor, hdev->product)) {
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_TABLET_PF1209):
-		rc = WITH_OPT_DESC(PF1209_ORIG, pf1209_fixed);
-		if (rc != 0)
-			goto cleanup;
-		break;
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_TABLET_WP4030U):
-		rc = WITH_OPT_DESC(WPXXXXU_ORIG, wp4030u_fixed);
-		if (rc != 0)
-			goto cleanup;
-		break;
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_TABLET_WP5540U):
-		if (hdev->dev_rsize == UCLOGIC_RDESC_WP5540U_V2_ORIG_SIZE) {
-			if (bInterfaceNumber == 0) {
-				/* Try to probe v1 pen parameters */
-				rc = uclogic_params_pen_init_v1(&p.pen,
-								&found, hdev);
-				if (rc != 0) {
-					hid_err(hdev,
-						"pen probing failed: %d\n",
-						rc);
-					goto cleanup;
-				}
-				if (!found) {
-					hid_warn(hdev,
-						 "pen parameters not found");
-				}
-			} else {
-				uclogic_params_init_invalid(&p);
-			}
-		} else {
-			rc = WITH_OPT_DESC(WPXXXXU_ORIG, wp5540u_fixed);
-			if (rc != 0)
-				goto cleanup;
-		}
-		break;
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_TABLET_WP8060U):
-		rc = WITH_OPT_DESC(WPXXXXU_ORIG, wp8060u_fixed);
-		if (rc != 0)
-			goto cleanup;
-		break;
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_TABLET_WP1062):
-		rc = WITH_OPT_DESC(WP1062_ORIG, wp1062_fixed);
-		if (rc != 0)
-			goto cleanup;
-		break;
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_WIRELESS_TABLET_TWHL850):
-		switch (bInterfaceNumber) {
-		case 0:
-			rc = WITH_OPT_DESC(TWHL850_ORIG0, twhl850_fixed0);
-			if (rc != 0)
-				goto cleanup;
-			break;
-		case 1:
-			rc = WITH_OPT_DESC(TWHL850_ORIG1, twhl850_fixed1);
-			if (rc != 0)
-				goto cleanup;
-			break;
-		case 2:
-			rc = WITH_OPT_DESC(TWHL850_ORIG2, twhl850_fixed2);
-			if (rc != 0)
-				goto cleanup;
-			break;
-		}
-		break;
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_TABLET_TWHA60):
-		/*
-		 * If it is not a three-interface version, which is known to
-		 * respond to initialization.
-		 */
-		if (bNumInterfaces != 3) {
-			switch (bInterfaceNumber) {
-			case 0:
-				rc = WITH_OPT_DESC(TWHA60_ORIG0,
-							twha60_fixed0);
-				if (rc != 0)
-					goto cleanup;
-				break;
-			case 1:
-				rc = WITH_OPT_DESC(TWHA60_ORIG1,
-							twha60_fixed1);
-				if (rc != 0)
-					goto cleanup;
-				break;
-			}
-			break;
-		}
-		/* FALL THROUGH */
-	case VID_PID(USB_VENDOR_ID_HUION,
-		     USB_DEVICE_ID_HUION_TABLET):
-	case VID_PID(USB_VENDOR_ID_HUION,
-		     USB_DEVICE_ID_HUION_TABLET2):
-	case VID_PID(USB_VENDOR_ID_HUION,
-		     USB_DEVICE_ID_HUION_TABLET3):
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_HUION_TABLET):
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_YIYNOVA_TABLET):
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_UGEE_TABLET_81):
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_DRAWIMAGE_G3):
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_UGEE_TABLET_45):
-	case VID_PID(USB_VENDOR_ID_UCLOGIC,
-		     USB_DEVICE_ID_UCLOGIC_UGEE_TABLET_47):
-		rc = uclogic_params_huion_init(&p, hdev);
-		if (rc != 0)
-			goto cleanup;
-		break;
-	case VID_PID(USB_VENDOR_ID_UGTIZER,
-		     USB_DEVICE_ID_UGTIZER_TABLET_GP0610):
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_XPPEN_TABLET_G540):
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_XPPEN_TABLET_G640):
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_XPPEN_TABLET_STAR06):
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_TABLET_RAINBOW_CV720):
-		/* If this is the pen interface */
-		if (bInterfaceNumber == 1) {
-			/* Probe v1 pen parameters */
-			rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
-			if (rc != 0) {
-				hid_err(hdev, "pen probing failed: %d\n", rc);
-				goto cleanup;
-			}
-			if (!found) {
-				hid_warn(hdev, "pen parameters not found");
-				uclogic_params_init_invalid(&p);
-			}
-		} else {
-			uclogic_params_init_invalid(&p);
-		}
-		break;
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO01):
-		/* If this is the pen and frame interface */
-		if (bInterfaceNumber == 1) {
-			/* Probe v1 pen parameters */
-			rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
-			if (rc != 0) {
-				hid_err(hdev, "pen probing failed: %d\n", rc);
-				goto cleanup;
-			}
-			/* Initialize frame parameters */
-			rc = uclogic_params_frame_init_with_desc(
-				&p.frame_list[0],
-				uclogic_rdesc_xppen_deco01_frame_arr,
-				uclogic_rdesc_xppen_deco01_frame_size,
-				0);
-			if (rc != 0)
-				goto cleanup;
-		} else {
-			uclogic_params_init_invalid(&p);
-		}
-		break;
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_TABLET_G5):
-		/* Ignore non-pen interfaces */
-		if (bInterfaceNumber != 1) {
-			uclogic_params_init_invalid(&p);
-			break;
-		}
+  switch (VID_PID(hdev->vendor, hdev->product)) {
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_PF1209):
+    rc = WITH_OPT_DESC(PF1209_ORIG, pf1209_fixed);
+    if (rc != 0)
+      goto cleanup;
+    break;
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_WP4030U):
+    rc = WITH_OPT_DESC(WPXXXXU_ORIG, wp4030u_fixed);
+    if (rc != 0)
+      goto cleanup;
+    break;
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_WP5540U):
+    if (hdev->dev_rsize == UCLOGIC_RDESC_WP5540U_V2_ORIG_SIZE) {
+      if (bInterfaceNumber == 0) {
+        /* Try to probe v1 pen parameters */
+        rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
+        if (rc != 0) {
+          hid_err(hdev, "pen probing failed: %d\n", rc);
+          goto cleanup;
+        }
+        if (!found) {
+          hid_warn(hdev, "pen parameters not found");
+        }
+      } else {
+        uclogic_params_init_invalid(&p);
+      }
+    } else {
+      rc = WITH_OPT_DESC(WPXXXXU_ORIG, wp5540u_fixed);
+      if (rc != 0)
+        goto cleanup;
+    }
+    break;
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_WP8060U):
+    rc = WITH_OPT_DESC(WPXXXXU_ORIG, wp8060u_fixed);
+    if (rc != 0)
+      goto cleanup;
+    break;
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_WP1062):
+    rc = WITH_OPT_DESC(WP1062_ORIG, wp1062_fixed);
+    if (rc != 0)
+      goto cleanup;
+    break;
+  case VID_PID(USB_VENDOR_ID_UCLOGIC,
+               USB_DEVICE_ID_UCLOGIC_WIRELESS_TABLET_TWHL850):
+    switch (bInterfaceNumber) {
+    case 0:
+      rc = WITH_OPT_DESC(TWHL850_ORIG0, twhl850_fixed0);
+      if (rc != 0)
+        goto cleanup;
+      break;
+    case 1:
+      rc = WITH_OPT_DESC(TWHL850_ORIG1, twhl850_fixed1);
+      if (rc != 0)
+        goto cleanup;
+      break;
+    case 2:
+      rc = WITH_OPT_DESC(TWHL850_ORIG2, twhl850_fixed2);
+      if (rc != 0)
+        goto cleanup;
+      break;
+    }
+    break;
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_TWHA60):
+    /*
+     * If it is not a three-interface version, which is known to
+     * respond to initialization.
+     */
+    if (bNumInterfaces != 3) {
+      switch (bInterfaceNumber) {
+      case 0:
+        rc = WITH_OPT_DESC(TWHA60_ORIG0, twha60_fixed0);
+        if (rc != 0)
+          goto cleanup;
+        break;
+      case 1:
+        rc = WITH_OPT_DESC(TWHA60_ORIG1, twha60_fixed1);
+        if (rc != 0)
+          goto cleanup;
+        break;
+      }
+      break;
+    }
+    /* FALL THROUGH */
+  case VID_PID(USB_VENDOR_ID_HUION, USB_DEVICE_ID_HUION_TABLET):
+  case VID_PID(USB_VENDOR_ID_HUION, USB_DEVICE_ID_HUION_TABLET2):
+  case VID_PID(USB_VENDOR_ID_HUION, USB_DEVICE_ID_HUION_TABLET3):
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_HUION_TABLET):
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_YIYNOVA_TABLET):
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_UGEE_TABLET_81):
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_DRAWIMAGE_G3):
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_UGEE_TABLET_45):
+  case VID_PID(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_UGEE_TABLET_47):
+    rc = uclogic_params_huion_init(&p, hdev);
+    if (rc != 0)
+      goto cleanup;
+    break;
+  case VID_PID(USB_VENDOR_ID_UGTIZER, USB_DEVICE_ID_UGTIZER_TABLET_GP0610):
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_G540):
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_G640):
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_STAR06):
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_TABLET_RAINBOW_CV720):
+    /* If this is the pen interface */
+    if (bInterfaceNumber == 1) {
+      /* Probe v1 pen parameters */
+      rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
+      if (rc != 0) {
+        hid_err(hdev, "pen probing failed: %d\n", rc);
+        goto cleanup;
+      }
+      if (!found) {
+        hid_warn(hdev, "pen parameters not found");
+        uclogic_params_init_invalid(&p);
+      }
+    } else {
+      uclogic_params_init_invalid(&p);
+    }
+    break;
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO01):
+    /* If this is the pen and frame interface */
+    if (bInterfaceNumber == 1) {
+      /* Probe v1 pen parameters */
+      rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
+      if (rc != 0) {
+        hid_err(hdev, "pen probing failed: %d\n", rc);
+        goto cleanup;
+      }
+      /* Initialize frame parameters */
+      rc = uclogic_params_frame_init_with_desc(
+          &p.frame_list[0], uclogic_rdesc_xppen_deco01_frame_arr,
+          uclogic_rdesc_xppen_deco01_frame_size, 0);
+      if (rc != 0)
+        goto cleanup;
+    } else {
+      uclogic_params_init_invalid(&p);
+    }
+    break;
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_TABLET_G5):
+    /* Ignore non-pen interfaces */
+    if (bInterfaceNumber != 1) {
+      uclogic_params_init_invalid(&p);
+      break;
+    }
 
-		rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
-		if (rc != 0) {
-			hid_err(hdev, "pen probing failed: %d\n", rc);
-			goto cleanup;
-		} else if (found) {
-			rc = uclogic_params_frame_init_with_desc(
-				&p.frame_list[0],
-				uclogic_rdesc_ugee_g5_frame_arr,
-				uclogic_rdesc_ugee_g5_frame_size,
-				UCLOGIC_RDESC_UGEE_G5_FRAME_ID);
-			if (rc != 0) {
-				hid_err(hdev,
-					"failed creating frame parameters: %d\n",
-					rc);
-				goto cleanup;
-			}
-			p.frame_list[0].re_lsb =
-				UCLOGIC_RDESC_UGEE_G5_FRAME_RE_LSB;
-			p.frame_list[0].dev_id_byte =
-				UCLOGIC_RDESC_UGEE_G5_FRAME_DEV_ID_BYTE;
-		} else {
-			hid_warn(hdev, "pen parameters not found");
-			uclogic_params_init_invalid(&p);
-		}
+    rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
+    if (rc != 0) {
+      hid_err(hdev, "pen probing failed: %d\n", rc);
+      goto cleanup;
+    } else if (found) {
+      rc = uclogic_params_frame_init_with_desc(
+          &p.frame_list[0], uclogic_rdesc_ugee_g5_frame_arr,
+          uclogic_rdesc_ugee_g5_frame_size, UCLOGIC_RDESC_UGEE_G5_FRAME_ID);
+      if (rc != 0) {
+        hid_err(hdev, "failed creating frame parameters: %d\n", rc);
+        goto cleanup;
+      }
+      p.frame_list[0].re_lsb = UCLOGIC_RDESC_UGEE_G5_FRAME_RE_LSB;
+      p.frame_list[0].dev_id_byte = UCLOGIC_RDESC_UGEE_G5_FRAME_DEV_ID_BYTE;
+    } else {
+      hid_warn(hdev, "pen parameters not found");
+      uclogic_params_init_invalid(&p);
+    }
 
-		break;
-	case VID_PID(USB_VENDOR_ID_UGEE,
-		     USB_DEVICE_ID_UGEE_TABLET_EX07S):
-		/* Ignore non-pen interfaces */
-		if (bInterfaceNumber != 1) {
-			uclogic_params_init_invalid(&p);
-			break;
-		}
+    break;
+  case VID_PID(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_TABLET_EX07S):
+    /* Ignore non-pen interfaces */
+    if (bInterfaceNumber != 1) {
+      uclogic_params_init_invalid(&p);
+      break;
+    }
 
-		rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
-		if (rc != 0) {
-			hid_err(hdev, "pen probing failed: %d\n", rc);
-			goto cleanup;
-		} else if (found) {
-			rc = uclogic_params_frame_init_with_desc(
-				&p.frame_list[0],
-				uclogic_rdesc_ugee_ex07_frame_arr,
-				uclogic_rdesc_ugee_ex07_frame_size,
-				0);
-			if (rc != 0) {
-				hid_err(hdev,
-					"failed creating frame parameters: %d\n",
-					rc);
-				goto cleanup;
-			}
-		} else {
-			hid_warn(hdev, "pen parameters not found");
-			uclogic_params_init_invalid(&p);
-		}
+    rc = uclogic_params_pen_init_v1(&p.pen, &found, hdev);
+    if (rc != 0) {
+      hid_err(hdev, "pen probing failed: %d\n", rc);
+      goto cleanup;
+    } else if (found) {
+      rc = uclogic_params_frame_init_with_desc(
+          &p.frame_list[0], uclogic_rdesc_ugee_ex07_frame_arr,
+          uclogic_rdesc_ugee_ex07_frame_size, 0);
+      if (rc != 0) {
+        hid_err(hdev, "failed creating frame parameters: %d\n", rc);
+        goto cleanup;
+      }
+    } else {
+      hid_warn(hdev, "pen parameters not found");
+      uclogic_params_init_invalid(&p);
+    }
 
-		break;
-	}
+    break;
+  }
 
 #undef VID_PID
 #undef WITH_OPT_DESC
 
-	/* Output parameters */
-	memcpy(params, &p, sizeof(*params));
-	memset(&p, 0, sizeof(p));
-	rc = 0;
+  /* Output parameters */
+  memcpy(params, &p, sizeof(*params));
+  memset(&p, 0, sizeof(p));
+  rc = 0;
 cleanup:
-	uclogic_params_cleanup(&p);
-	return rc;
+  uclogic_params_cleanup(&p);
+  return rc;
 }
